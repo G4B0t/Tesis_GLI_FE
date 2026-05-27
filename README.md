@@ -33,10 +33,27 @@ http://localhost:5173
 Tesis_GLI_FE/
   index.html
   src/
-    app.jsx
-    main.jsx
-    styles.css
+    app/
+      App.tsx
+    components/
+      common/
+    models/
+    pages/
+    services/
+    styles/
+      GlobalStyle.ts
+      mixins.ts
+      theme.ts
+    main.tsx
 ```
+
+## Convenciones
+
+- `components/common`: componentes reutilizables sin logica de negocio.
+- `models`: tipos TypeScript para parametros, resultados y configuracion.
+- `pages`: pantallas completas conectando estado, servicios y componentes.
+- `services`: llamadas al backend y calculos temporales de vista previa.
+- `styles`: tema, estilos globales y mixins de `styled-components`.
 
 ## Conexion esperada con backend
 
