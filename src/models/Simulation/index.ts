@@ -38,6 +38,6 @@ export type SimulationStatus =
 export interface InputFieldConfig {
   key: keyof SimulationInputs;
   label: string;
-  unit: string;
   step: number;
+  unit: string;
 }

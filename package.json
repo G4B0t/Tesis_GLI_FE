@@ -2,11 +2,12 @@
   "name": "tesis-gli-fe",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Frontend React para la simulacion GLI convencional.",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --pretty false",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {

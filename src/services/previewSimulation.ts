@@ -1,4 +1,4 @@
-import type { SimulationInputs, SimulationResult } from "../models/simulation";
+import type { SimulationInputs, SimulationResult } from "@models/Simulation";
 
 function oilRelativeDensity(api: number) {
   return 141.5 / (131.5 + api);

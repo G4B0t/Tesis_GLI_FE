@@ -1,4 +1,4 @@
-import type { SimulationInputs, SimulationResult } from "../models/simulation";
+import type { SimulationInputs, SimulationResult } from "@models/Simulation";
 
 export async function requestSimulation(
   apiBase: string,

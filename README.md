@@ -33,27 +33,46 @@ http://localhost:5173
 Tesis_GLI_FE/
   index.html
   src/
-    app/
-      App.tsx
+    App.tsx
     components/
-      common/
+      Button/
+        index.tsx
+        styles.ts
+        types.ts
+      FormField/
+      LineChart/
+      MetricCard/
+      StatusPill/
+      StyledApp/
     models/
+      Simulation/
     pages/
+      Simulation/
+        index.tsx
+        styles.ts
+        types.ts
+        constants.ts
     services/
-    styles/
-      GlobalStyle.ts
+    themes/
       mixins.ts
       theme.ts
+      styles/
+        GlobalStyle.ts
+    types/
+      styled.d.ts
     main.tsx
 ```
 
 ## Convenciones
 
-- `components/common`: componentes reutilizables sin logica de negocio.
-- `models`: tipos TypeScript para parametros, resultados y configuracion.
-- `pages`: pantallas completas conectando estado, servicios y componentes.
+- La estructura sigue la guia del proyecto `PARKOHL`.
+- `components`: componentes reutilizables en carpetas PascalCase.
+- Cada componente usa `index.tsx`, `styles.ts` y `types.ts`.
+- `models`: entidades compartidas de dominio.
+- `pages`: pantallas completas con estilos y tipos propios.
 - `services`: llamadas al backend y calculos temporales de vista previa.
-- `styles`: tema, estilos globales y mixins de `styled-components`.
+- `themes`: tema, estilos globales y mixins de `styled-components`.
+- `types`: definiciones globales de TypeScript.
 
 ## Conexion esperada con backend
 
