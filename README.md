@@ -27,6 +27,20 @@ Luego abrir:
 http://localhost:5173
 ```
 
+## Variables de entorno
+
+Copia `.env.example` a `.env` y ajusta el puerto del backend si hace falta.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Variable principal:
+
+```text
+VITE_REACT_APP_BACKEND_URL=http://127.0.0.1:8008
+```
+
 ## Estructura
 
 ```text

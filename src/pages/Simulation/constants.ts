@@ -1,6 +1,7 @@
 import type { InputFieldConfig, SimulationInputs } from "@models/Simulation";
 
-export const API_BASE_URL = "http://localhost:8000";
+export const API_BASE_URL =
+  import.meta.env.VITE_REACT_APP_BACKEND_URL ?? "http://127.0.0.1:8008";
 
 export const initialInputs: SimulationInputs = {
   tubingDiameter: 0.0603,
