@@ -57,6 +57,12 @@ export const FieldGrid = styled.section`
   }
 `;
 
+export const ProjectGrid = styled.section`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.md};
+  grid-template-columns: 1fr;
+`;
+
 export const Workspace = styled.section`
   display: flex;
   flex-direction: column;

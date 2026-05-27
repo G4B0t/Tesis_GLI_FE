@@ -1,4 +1,6 @@
 export interface SimulationInputs {
+  projectName: string;
+  projectistName: string;
   tubingDiameter: number;
   valveDepth: number;
   slugLength: number;
@@ -26,8 +28,12 @@ export interface SimulationPoint {
 }
 
 export interface SimulationResult {
+  createdAt?: string;
   metrics: SimulationMetrics;
   points: SimulationPoint[];
+  projectName?: string;
+  projectistName?: string;
+  simulationId?: number;
 }
 
 export type SimulationStatus =
@@ -36,8 +42,14 @@ export type SimulationStatus =
   | "Vista preliminar local";
 
 export interface InputFieldConfig {
-  key: keyof SimulationInputs;
+  key: NumericSimulationInputKey;
   label: string;
   step: number;
   unit: string;
 }
+
+export type NumericSimulationInputKey = {
+  [Key in keyof SimulationInputs]: SimulationInputs[Key] extends number ? Key : never;
+}[keyof SimulationInputs];
+
+export type ProjectSimulationInputKey = "projectName" | "projectistName";

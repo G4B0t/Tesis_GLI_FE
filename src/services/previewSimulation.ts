@@ -39,6 +39,7 @@ export function simulatePreview(inputs: SimulationInputs): SimulationResult {
   });
 
   return {
+    createdAt: new Date().toISOString(),
     metrics: {
       rhoL,
       pTo: pTo / 1_000_000,
@@ -47,5 +48,7 @@ export function simulatePreview(inputs: SimulationInputs): SimulationResult {
       duration,
     },
     points,
+    projectName: inputs.projectName,
+    projectistName: inputs.projectistName,
   };
 }

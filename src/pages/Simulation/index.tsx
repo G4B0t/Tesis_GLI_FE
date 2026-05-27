@@ -6,7 +6,12 @@ import FormField from "@components/FormField";
 import LineChart from "@components/LineChart";
 import MetricCard from "@components/MetricCard";
 import StatusPill from "@components/StatusPill";
-import type { SimulationInputs, SimulationStatus } from "@models/Simulation";
+import type {
+  NumericSimulationInputKey,
+  ProjectSimulationInputKey,
+  SimulationInputs,
+  SimulationStatus,
+} from "@models/Simulation";
 import { requestSimulation } from "@services/simulationApi";
 import { simulatePreview } from "@services/previewSimulation";
 
@@ -17,6 +22,7 @@ import {
   Eyebrow,
   FieldGrid,
   MetricsGrid,
+  ProjectGrid,
   Shell,
   Sidebar,
   Topbar,
@@ -30,23 +36,42 @@ const Simulation = () => {
   const [result, setResult] = useState(() => simulatePreview(initialInputs));
   const [status, setStatus] = useState<SimulationStatus>("Vista preliminar local");
 
-  const formattedMetrics = useMemo<MetricTuple[]>(
-    () => [
+  const formattedCreatedAt = useMemo(() => {
+    if (!result.createdAt) {
+      return "Sin guardar";
+    }
+
+    return new Intl.DateTimeFormat("es-BO", {
+      dateStyle: "short",
+      timeStyle: "medium",
+    }).format(new Date(result.createdAt));
+  }, [result.createdAt]);
+
+  const formattedMetrics = useMemo<MetricTuple[]>(() => {
+    const savedId = result.simulationId ? `#${result.simulationId}` : "Vista local";
+
+    return [
+      ["Simulacion", savedId, ""],
+      ["Fecha y hora", formattedCreatedAt, ""],
       ["Densidad liquido", result.metrics.rhoL.toFixed(1), "kg/m3"],
       ["P_to", result.metrics.pTo.toFixed(3), "MPa"],
-      ["P_vo", result.metrics.pVo.toFixed(3), "MPa"],
-      ["P_bt", result.metrics.pBt.toFixed(3), "MPa"],
       ["Tiempo etapa 1", result.metrics.duration.toFixed(0), "s"],
-    ],
-    [result.metrics],
-  );
+    ];
+  }, [formattedCreatedAt, result.metrics, result.simulationId]);
 
-  const updateInput = useCallback((key: keyof SimulationInputs, value: string) => {
+  const updateInput = useCallback((key: NumericSimulationInputKey, value: string) => {
     const parsed = Number(value);
 
     setInputs((current) => ({
       ...current,
       [key]: Number.isFinite(parsed) ? parsed : current[key],
+    }));
+  }, []);
+
+  const updateProjectInput = useCallback((key: ProjectSimulationInputKey, value: string) => {
+    setInputs((current) => ({
+      ...current,
+      [key]: value,
     }));
   }, []);
 
@@ -71,6 +96,21 @@ const Simulation = () => {
           <h1>Simulador Gas Lift Intermitente</h1>
         </BrandBlock>
 
+        <ProjectGrid>
+          <FormField
+            id="project-name"
+            label="Nombre del proyecto"
+            onChange={(value) => updateProjectInput("projectName", value)}
+            value={inputs.projectName}
+          />
+          <FormField
+            id="projectist-name"
+            label="Proyectista"
+            onChange={(value) => updateProjectInput("projectistName", value)}
+            value={inputs.projectistName}
+          />
+        </ProjectGrid>
+
         <FormField id="api-base" label="Backend API" onChange={setApiBase} value={apiBase} />
 
         <FieldGrid>
@@ -88,7 +128,12 @@ const Simulation = () => {
           ))}
         </FieldGrid>
 
-        <Button icon={<Play size={18} strokeWidth={2.5} />} label="Ejecutar simulacion" onClick={runSimulation} width100 />
+        <Button
+          icon={<Play size={18} strokeWidth={2.5} />}
+          label="Ejecutar simulacion"
+          onClick={runSimulation}
+          width100
+        />
       </Sidebar>
 
       <Workspace>
@@ -97,7 +142,10 @@ const Simulation = () => {
             <Eyebrow>Modelo I Santos</Eyebrow>
             <h2>Ciclo GLI convencional</h2>
           </div>
-          <StatusPill icon={Server} label={status} />
+          <StatusPill
+            icon={Server}
+            label={result.simulationId ? `${status} #${result.simulationId}` : status}
+          />
         </Topbar>
 
         <MetricsGrid>
