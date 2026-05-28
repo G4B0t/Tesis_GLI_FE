@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import type { RunMessageTone } from "./types";
+
 export const Shell = styled.main`
   display: grid;
   grid-template-columns: minmax(300px, 380px) 1fr;
@@ -121,5 +123,30 @@ export const ChartsGrid = styled.section`
 
   @media (max-width: ${({ theme }) => theme.spacing.breakpoints.lg}) {
     grid-template-columns: 1fr;
+  }
+`;
+
+const messageColors: Record<RunMessageTone, string> = {
+  error: "#b42318",
+  success: "#0f8a65",
+  warning: "#8f5f21",
+};
+
+export const RunMessageBox = styled.section<{ $tone: RunMessageTone }>`
+  background: ${({ theme }) => theme.colors.surfacePrimary};
+  border: 1px solid ${({ $tone }) => messageColors[$tone]};
+  border-left-width: 6px;
+  border-radius: ${({ theme }) => theme.spacing.borderRadius.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.md};
+
+  strong {
+    color: ${({ $tone }) => messageColors[$tone]};
+  }
+
+  p {
+    margin: 0;
   }
 `;

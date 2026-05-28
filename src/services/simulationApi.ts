@@ -11,7 +11,8 @@ export async function requestSimulation(
   });
 
   if (!response.ok) {
-    throw new Error("Backend no disponible");
+    const errorText = await response.text();
+    throw new Error(errorText || "Backend no disponible");
   }
 
   return response.json() as Promise<SimulationResult>;

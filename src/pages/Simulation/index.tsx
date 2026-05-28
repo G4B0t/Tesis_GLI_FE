@@ -23,17 +23,22 @@ import {
   FieldGrid,
   MetricsGrid,
   ProjectGrid,
+  RunMessageBox,
   Shell,
   Sidebar,
   Topbar,
   Workspace,
 } from "./styles";
-import type { MetricTuple } from "./types";
+import type { MetricTuple, RunMessage } from "./types";
 
 const Simulation = () => {
   const [inputs, setInputs] = useState<SimulationInputs>(initialInputs);
   const [apiBase, setApiBase] = useState(API_BASE_URL);
   const [result, setResult] = useState(() => simulatePreview(initialInputs));
+  const [runMessage, setRunMessage] = useState<RunMessage>({
+    text: "Aun no se guardo ninguna simulacion en la base de datos.",
+    tone: "warning",
+  });
   const [status, setStatus] = useState<SimulationStatus>("Vista preliminar local");
 
   const formattedCreatedAt = useMemo(() => {
@@ -77,14 +82,28 @@ const Simulation = () => {
 
   const runSimulation = useCallback(async () => {
     setStatus("Calculando...");
+    setRunMessage({
+      text: `Enviando parametros al backend: ${apiBase}`,
+      tone: "warning",
+    });
 
     try {
       const backendResult = await requestSimulation(apiBase, inputs);
       setResult(backendResult);
       setStatus("Resultado desde backend");
-    } catch {
+      setRunMessage({
+        text: `Simulacion guardada en MySQL con ID #${backendResult.simulationId}. Proyecto: ${backendResult.projectName}. Proyectista: ${backendResult.projectistName}.`,
+        tone: "success",
+      });
+    } catch (error) {
       setResult(simulatePreview(inputs));
       setStatus("Vista preliminar local");
+      setRunMessage({
+        text: `No se pudo guardar en backend. Se muestra vista local. Detalle: ${
+          error instanceof Error ? error.message : "error desconocido"
+        }`,
+        tone: "error",
+      });
     }
   }, [apiBase, inputs]);
 
@@ -153,6 +172,17 @@ const Simulation = () => {
             <MetricCard key={label} label={label} unit={unit} value={value} />
           ))}
         </MetricsGrid>
+
+        <RunMessageBox $tone={runMessage.tone}>
+          <strong>
+            {runMessage.tone === "success"
+              ? "Conexion correcta"
+              : runMessage.tone === "error"
+                ? "No se guardo la simulacion"
+                : "Estado de ejecucion"}
+          </strong>
+          <p>{runMessage.text}</p>
+        </RunMessageBox>
 
         <ChartsGrid>
           <LineChart
