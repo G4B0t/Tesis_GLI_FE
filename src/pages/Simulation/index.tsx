@@ -1,4 +1,4 @@
-import { Activity, Play, Server } from "lucide-react";
+import { Activity, Play, Save, Server } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import Button from "@components/Button";
@@ -12,7 +12,7 @@ import type {
   SimulationInputs,
   SimulationStatus,
 } from "@models/Simulation";
-import { requestSimulation } from "@services/simulationApi";
+import { requestSimulation, saveSimulation } from "@services/simulationApi";
 import { simulatePreview } from "@services/previewSimulation";
 
 import { API_BASE_URL, initialInputs, inputFields } from "./constants";
@@ -35,6 +35,8 @@ const Simulation = () => {
   const [inputs, setInputs] = useState<SimulationInputs>(initialInputs);
   const [apiBase, setApiBase] = useState(API_BASE_URL);
   const [result, setResult] = useState(() => simulatePreview(initialInputs));
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [runMessage, setRunMessage] = useState<RunMessage>({
     text: "Aun no se guardo ninguna simulacion en la base de datos.",
     tone: "warning",
@@ -81,9 +83,10 @@ const Simulation = () => {
   }, []);
 
   const runSimulation = useCallback(async () => {
+    setIsRunning(true);
     setStatus("Calculando...");
     setRunMessage({
-      text: `Enviando parametros al backend: ${apiBase}`,
+      text: `Ejecutando simulacion con los parametros ingresados: ${apiBase}`,
       tone: "warning",
     });
 
@@ -92,7 +95,7 @@ const Simulation = () => {
       setResult(backendResult);
       setStatus("Resultado desde backend");
       setRunMessage({
-        text: `Simulacion guardada en MySQL con ID #${backendResult.simulationId}. Proyecto: ${backendResult.projectName}. Proyectista: ${backendResult.projectistName}.`,
+        text: "Simulacion ejecutada. La grafica fue actualizada, pero aun no se guardo en MySQL.",
         tone: "success",
       });
     } catch (error) {
@@ -104,6 +107,35 @@ const Simulation = () => {
         }`,
         tone: "error",
       });
+    } finally {
+      setIsRunning(false);
+    }
+  }, [apiBase, inputs]);
+
+  const saveCurrentSimulation = useCallback(async () => {
+    setIsSaving(true);
+    setRunMessage({
+      text: "Guardando parametros y resultado de simulacion en MySQL...",
+      tone: "warning",
+    });
+
+    try {
+      const savedResult = await saveSimulation(apiBase, inputs);
+      setResult(savedResult);
+      setStatus("Resultado desde backend");
+      setRunMessage({
+        text: `Parametros guardados en MySQL con ID #${savedResult.simulationId}. Proyecto: ${savedResult.projectName}. Proyectista: ${savedResult.projectistName}.`,
+        tone: "success",
+      });
+    } catch (error) {
+      setRunMessage({
+        text: `No se pudo guardar en MySQL. Detalle: ${
+          error instanceof Error ? error.message : "error desconocido"
+        }`,
+        tone: "error",
+      });
+    } finally {
+      setIsSaving(false);
     }
   }, [apiBase, inputs]);
 
@@ -150,7 +182,15 @@ const Simulation = () => {
         <Button
           icon={<Play size={18} strokeWidth={2.5} />}
           label="Ejecutar simulacion"
+          loading={isRunning}
           onClick={runSimulation}
+          width100
+        />
+        <Button
+          icon={<Save size={18} strokeWidth={2.5} />}
+          label="Guardar parametros"
+          loading={isSaving}
+          onClick={saveCurrentSimulation}
           width100
         />
       </Sidebar>
