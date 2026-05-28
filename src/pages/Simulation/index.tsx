@@ -33,7 +33,6 @@ import type { MetricTuple, RunMessage } from "./types";
 
 const Simulation = () => {
   const [inputs, setInputs] = useState<SimulationInputs>(initialInputs);
-  const [apiBase, setApiBase] = useState(API_BASE_URL);
   const [result, setResult] = useState(() => simulatePreview(initialInputs));
   const [isRunning, setIsRunning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -86,12 +85,12 @@ const Simulation = () => {
     setIsRunning(true);
     setStatus("Calculando...");
     setRunMessage({
-      text: `Ejecutando simulacion con los parametros ingresados: ${apiBase}`,
+      text: "Ejecutando simulacion con los parametros ingresados.",
       tone: "warning",
     });
 
     try {
-      const backendResult = await requestSimulation(apiBase, inputs);
+      const backendResult = await requestSimulation(API_BASE_URL, inputs);
       setResult(backendResult);
       setStatus("Resultado desde backend");
       setRunMessage({
@@ -110,7 +109,7 @@ const Simulation = () => {
     } finally {
       setIsRunning(false);
     }
-  }, [apiBase, inputs]);
+  }, [inputs]);
 
   const saveCurrentSimulation = useCallback(async () => {
     setIsSaving(true);
@@ -120,7 +119,7 @@ const Simulation = () => {
     });
 
     try {
-      const savedResult = await saveSimulation(apiBase, inputs);
+      const savedResult = await saveSimulation(API_BASE_URL, inputs);
       setResult(savedResult);
       setStatus("Resultado desde backend");
       setRunMessage({
@@ -137,7 +136,7 @@ const Simulation = () => {
     } finally {
       setIsSaving(false);
     }
-  }, [apiBase, inputs]);
+  }, [inputs]);
 
   return (
     <Shell>
@@ -161,9 +160,6 @@ const Simulation = () => {
             value={inputs.projectistName}
           />
         </ProjectGrid>
-
-        <FormField id="api-base" label="Backend API" onChange={setApiBase} value={apiBase} />
-
         <FieldGrid>
           {inputFields.map((field) => (
             <FormField
